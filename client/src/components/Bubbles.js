@@ -11,9 +11,11 @@ const Bubbles = ({ colors }) => {
     }));
     setBubbleData(generateBubbleData);
   }, [colors]);
-
+  console.log("Bubbles -> colors", colors)
+  
   return (
-    <div className="bubble-wrap">
+    <div  className="bubble-wrap"
+    data-testid='bubbles'>
       <p>bubbles</p>
       <Svg width={400} height={400}>
         <Pack
