@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { useHistory } from 'react-router-dom'
 import axios from "axios";
+import { axiosWithAuth } from "../utils/axiosWithAuth";
+import Form from './Form'
 
 const initialColor = {
   color: "",
@@ -7,7 +10,9 @@ const initialColor = {
 };
 
 const ColorList = ({ colors, updateColors }) => {
-  console.log(colors);
+  // const { push } = useHistory();
+  // console.log(colors);
+  console.log("ColorList -> colors", colors)
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
 
@@ -15,24 +20,44 @@ const ColorList = ({ colors, updateColors }) => {
     setEditing(true);
     setColorToEdit(color);
   };
-
   const saveEdit = e => {
     e.preventDefault();
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
-  };
+    axiosWithAuth()
+      .put(`api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        setColorToEdit(res.data)
+        // push('/protected')
+        window.location.reload();
 
+      })
+      .catch(err => console.log(err))
+  }
+
+  // const deleteColor = color => {
+  //   // make a delete request to delete this color
+  // };
   const deleteColor = color => {
-    // make a delete request to delete this color
-  };
+    axiosWithAuth()
+      .delete(`/api/colors/${color.id}`)
+      .then(res => {
+        console.log(res)
+        // push('/protected')
+        window.location.reload();
+      })
+      .catch(err => console.log(err))
+  }
+
 
   return (
     <div className="colors-wrap">
       <p>colors</p>
       <ul>
         {colors.map(color => (
-          <li key={color.color} onClick={() => editColor(color)}>
+          <li key={color.color}           data-testid='colorList'
+          onClick={() => editColor(color)}>
             <span>
               <span className="delete" onClick={e => {
                     e.stopPropagation();
@@ -80,8 +105,8 @@ const ColorList = ({ colors, updateColors }) => {
           </div>
         </form>
       )}
+      <Form />
       <div className="spacer" />
-      {/* stretch - build another form here to add a color */}
     </div>
   );
 };
